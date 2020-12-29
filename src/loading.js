@@ -31,7 +31,7 @@ function animate() {
   }
 }
 
-loadingContainer.addChild(loadingText);
-loadingContainer.addChild(loadingLine);
+loadingContainer.addChild(loadingText,loadingLine);
+// loadingContainer.addChild(loadingLine);
 
 export default loadingContainer;

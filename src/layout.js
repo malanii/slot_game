@@ -1,6 +1,6 @@
 import "./styles/style.css";
 import { loadProgressHandler } from "./loading";
-import { loadGameContainer } from "./gameContainer";
+import { loadGameContainer } from "./gameFlow";
 
 const slotGame = () => {
   PIXI.Loader.shared
