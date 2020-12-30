@@ -1,5 +1,4 @@
 import app from "./app";
-import {winningClickScreen} from "./gameFlow";
 
 let winningContainer = new PIXI.Container();
 
@@ -21,24 +20,20 @@ export function winning() {
     fill: "#f9ea02",
   });
   winningText.anchor.set(0.6, 0.5);
-  winningText.x = app.screen.width / 2;
-  winningText.y = app.screen.height / 2;
-
-
-
-
-  winningContainer.addChild(winningBg, winningText);
+  winningText.position.set(app.screen.width / 2, app.screen.height / 2);
+  winningContainer.addChild(winningBg, winningText,winningClickScreen);
   app.stage.addChild(winningContainer);
 }
 
-// window.app = app;
-// app.renderer.plugins.interaction.on('pointerdown', deleteWinningScreen);
-
-
-
-
+let winningClickScreen = new PIXI.Graphics();
+winningClickScreen.beginFill(0xfffff, 0.001);
+winningClickScreen.drawRect(0, 0, app.screen.width, app.screen.height);
+winningClickScreen.endFill();
+winningClickScreen.interactive = true;
+winningClickScreen.on("click", () => {
+    deleteWinningScreen();
+});
 
 export function deleteWinningScreen() {
-  app.stage.removeChild (winningClickScreen)
   winningContainer.removeChildren();
 }

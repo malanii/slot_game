@@ -1,6 +1,7 @@
 import "./styles/style.css";
 import { loadProgressHandler, deleteLoadProgressHandler } from "./loading";
-import { loadGameContainer } from "./gameFlow";
+import { loadGameContainer } from "./flow";
+import { loadUICanvas } from "./ui";
 
 const slotGame = () => {
   PIXI.Loader.shared
@@ -8,7 +9,7 @@ const slotGame = () => {
     .on("progress", loadProgressHandler)
     .load(
       setTimeout(() => {
-        deleteLoadProgressHandler(), loadGameContainer();
+          loadUICanvas(), deleteLoadProgressHandler(), loadGameContainer();
       }, 1000)
     );
 };

@@ -1,34 +1,22 @@
 import app from "./app";
-import { winning, deleteWinningScreen } from "./winning";
-
-
+import { deleteWinningScreen, winning } from "./winning";
 
 let game = new PIXI.Container();
-export default game;
-export let spinsCount = 0;
+let reelContainer = new PIXI.Container();
+let spinsCount = 0;
 let running = false;
+const REEL_WIDTH = 240;
+const SYMBOL_SIZE = 180;
+const btnArr = [];
+const reels = [];
+const tweening = [];
+
 export function loadGameContainer() {
   app.stage.addChild(game);
-  setup();
+  launchGame();
 }
 
-export let winningClickScreen = new PIXI.Graphics();
-winningClickScreen.beginFill(0xfffff, 0.001);
-winningClickScreen.drawRect(0, 0, app.screen.width, app.screen.height);
-winningClickScreen.endFill();
-winningClickScreen.interactive = true;
-winningClickScreen.on("click", () => {
-  spinsCount = 0;
-  deleteWinningScreen();
-});
-
-export function setup() {
-
-  let bg = new PIXI.Sprite(PIXI.utils.TextureCache["BG.png"]);
-  bg.anchor.set(0.5);
-  bg.position.set(app.screen.width / 2, app.screen.height / 2);
-  game.addChild(bg);
-  let btnArr = [];
+export function launchGame() {
   let btnActive = new PIXI.Sprite(PIXI.utils.TextureCache["BTN_Spin.png"]);
   let btnDisable = new PIXI.Sprite(PIXI.utils.TextureCache["BTN_Spin_d.png"]);
   btnArr.push(btnActive, btnDisable);
@@ -40,16 +28,15 @@ export function setup() {
       app.screen.height / 2
     );
   });
-
   game.addChild(btnActive);
   btnActive.on("click", () => {
     startPlay();
   });
 
   btnDisable.on("click", () => {
-    reelsComplete();
+    endPlay();
   });
-  // ___________________slots_______________________________
+  // Game starts
   const slotTextures = [
     PIXI.Texture.from("SYM1.png"),
     PIXI.Texture.from("SYM3.png"),
@@ -58,12 +45,6 @@ export function setup() {
     PIXI.Texture.from("SYM6.png"),
     PIXI.Texture.from("SYM7.png"),
   ];
-  // Build the reels
-  const REEL_WIDTH = 240;
-  const SYMBOL_SIZE = 180;
-  const reels = [];
-  let reelContainer = new PIXI.Container();
-
   for (let i = 0; i < 3; i++) {
     let rc = new PIXI.Container();
     rc.x = i * REEL_WIDTH;
@@ -78,12 +59,11 @@ export function setup() {
     reel.blur.blurX = 0;
     reel.blur.blurY = 0;
     rc.filters = [reel.blur];
-    // Build the symbols
+
     for (let j = 0; j < 4; j++) {
       let symbol = new PIXI.Sprite(
         slotTextures[Math.floor(Math.random() * slotTextures.length)]
       );
-      // Scale the symbol to fit symbol area.
       symbol.y = j * SYMBOL_SIZE;
       symbol.anchor.set(0.5);
       symbol.scale.x = symbol.scale.y = Math.min(
@@ -96,42 +76,22 @@ export function setup() {
     }
     reels.push(reel);
   }
-  app.stage.addChild(reelContainer);
-
-  //set reelContainer position
-
   reelContainer.position.set(
     app.screen.width / 2 + 35,
     app.screen.height / 2 + 510
   );
   reelContainer.pivot.set(reelContainer.width / 2, reelContainer.height / 2);
-
-  //mask
-  let visibleScreen = new PIXI.Graphics();
-  visibleScreen.beginFill(0, 1);
-  visibleScreen.drawRect(
-    0,
-    (app.screen.height - bg.height) / 2,
-    app.screen.width,
-    bg.height
-  );
-  visibleScreen.endFill();
-  game.addChild(visibleScreen);
-  reelContainer.mask = visibleScreen;
-
-  // start and end game
-
+  app.stage.addChild(reelContainer);
   function startPlay() {
     spinsCount++;
     if (spinsCount === 5) {
       running = false;
       winning();
-      app.stage.addChild(winningClickScreen);
       setTimeout(() => {
+        spinsCount = 0;
         deleteWinningScreen();
-      }, 5000);
+      }, 3000);
     }
-
     if (spinsCount < 5) {
       gameToggleElements(btnActive, btnDisable);
       if (running) return;
@@ -148,23 +108,20 @@ export function setup() {
           time,
           backout(0.5),
           null,
-          i === reels.length - 1 ? reelsComplete : null
+          i === reels.length - 1 ? endPlay : null
         );
       }
     }
   }
-  function reelsComplete() {
+  function endPlay() {
     gameToggleElements(btnDisable, btnActive);
     running = false;
   }
-
-  app.ticker.add((delta) => {
-    // Update the slots.
+  app.ticker.add(() => {
     for (let i = 0; i < reels.length; i++) {
       const r = reels[i];
       r.blur.blurY = (r.position - r.previousPosition) * 8;
       r.previousPosition = r.position;
-      // Update symbol positions on reel.
       for (let j = 0; j < r.symbols.length; j++) {
         const s = r.symbols[j];
         const prevy = s.y;
@@ -183,8 +140,6 @@ export function setup() {
       }
     }
   });
-
-  const tweening = [];
   function tweenTo(
     object,
     property,
@@ -208,7 +163,7 @@ export function setup() {
     tweening.push(tween);
     return tween;
   }
-  app.ticker.add((delta) => {
+  app.ticker.add(() => {
     const now = Date.now();
     const remove = [];
     for (let i = 0; i < tweening.length; i++) {
@@ -225,8 +180,6 @@ export function setup() {
         t.target,
         t.easing(phase)
       );
-      // console.log(phase);
-
       if (t.change) t.change(t);
       if (phase === 1) {
         t.object[t.property] = t.target;
@@ -234,21 +187,20 @@ export function setup() {
         remove.push(t);
       }
     }
-
     for (let i = 0; i < remove.length; i++) {
       tweening.splice(tweening.indexOf(remove[i]), 1);
     }
   });
-
-  function lerp(a1, a2, t) {
-    return a1 * (1 - t) + a2 * t;
-  }
-  function backout(amount) {
-    return (t) => --t * t * ((amount + 1) * t + amount) + 1;
-  }
 }
 
+function lerp(a1, a2, t) {
+  return a1 * (1 - t) + a2 * t;
+}
+function backout(amount) {
+  return (t) => --t * t * ((amount + 1) * t + amount) + 1;
+}
 function gameToggleElements(itemToRemove, itemToAdd) {
   game.removeChild(itemToRemove);
   game.addChild(itemToAdd);
 }
+export default game;

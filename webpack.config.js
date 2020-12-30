@@ -3,11 +3,11 @@ const HTMLWebpackPlugin = require("html-webpack-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = {
   entry: {
-    main: "./src/layout.js",
+    main: "./src/index.js",
     loading: "./src/loading.js",
-    game: "./src/gameFlow.js",
+    game: "./src/flow.js",
     winning: "./src/winning.js",
-    // ui: "./src/ui.js",
+    ui: "./src/ui.js",
     // reel:"./src/reel.js"
   },
   mode: "development",
