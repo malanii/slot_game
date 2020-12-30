@@ -7,6 +7,8 @@ module.exports = {
     loading: "./src/loading.js",
     game: "./src/gameFlow.js",
     winning: "./src/winning.js",
+    // ui: "./src/ui.js",
+    // reel:"./src/reel.js"
   },
   mode: "development",
   output: {

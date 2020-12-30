@@ -1,16 +1,30 @@
 import app from "./app";
-import loadingContainer from "./loading";
 import { winning, deleteWinningScreen } from "./winning";
+
+
+
 let game = new PIXI.Container();
 export default game;
+export let spinsCount = 0;
+let running = false;
 export function loadGameContainer() {
-  app.stage.removeChild(loadingContainer);
   app.stage.addChild(game);
   setup();
 }
-export function setup() {
-  let bg = new PIXI.Sprite(PIXI.utils.TextureCache["BG.png"]);
 
+export let winningClickScreen = new PIXI.Graphics();
+winningClickScreen.beginFill(0xfffff, 0.001);
+winningClickScreen.drawRect(0, 0, app.screen.width, app.screen.height);
+winningClickScreen.endFill();
+winningClickScreen.interactive = true;
+winningClickScreen.on("click", () => {
+  spinsCount = 0;
+  deleteWinningScreen();
+});
+
+export function setup() {
+
+  let bg = new PIXI.Sprite(PIXI.utils.TextureCache["BG.png"]);
   bg.anchor.set(0.5);
   bg.position.set(app.screen.width / 2, app.screen.height / 2);
   game.addChild(bg);
@@ -26,6 +40,7 @@ export function setup() {
       app.screen.height / 2
     );
   });
+
   game.addChild(btnActive);
   btnActive.on("click", () => {
     startPlay();
@@ -64,7 +79,7 @@ export function setup() {
     reel.blur.blurY = 0;
     rc.filters = [reel.blur];
     // Build the symbols
-    for (let j = 0; j < 3; j++) {
+    for (let j = 0; j < 4; j++) {
       let symbol = new PIXI.Sprite(
         slotTextures[Math.floor(Math.random() * slotTextures.length)]
       );
@@ -82,30 +97,39 @@ export function setup() {
     reels.push(reel);
   }
   app.stage.addChild(reelContainer);
+
   //set reelContainer position
-  reelContainer.x = app.screen.width / 2 + 35;
-  reelContainer.y = app.screen.height / 2 + 600;
-  reelContainer.pivot.x = reelContainer.width / 2;
-  reelContainer.pivot.y = reelContainer.height / 2;
+
+  reelContainer.position.set(
+    app.screen.width / 2 + 35,
+    app.screen.height / 2 + 510
+  );
+  reelContainer.pivot.set(reelContainer.width / 2, reelContainer.height / 2);
+
   //mask
-  let g = new PIXI.Graphics();
-  g.beginFill(0, 1);
-  g.drawRect(0, 0, bg.width + 125, bg.height + 110);
-  g.endFill();
-  game.addChild(g);
-  reelContainer.mask = g;
+  let visibleScreen = new PIXI.Graphics();
+  visibleScreen.beginFill(0, 1);
+  visibleScreen.drawRect(
+    0,
+    (app.screen.height - bg.height) / 2,
+    app.screen.width,
+    bg.height
+  );
+  visibleScreen.endFill();
+  game.addChild(visibleScreen);
+  reelContainer.mask = visibleScreen;
+
   // start and end game
-  let running = false;
+
   function startPlay() {
     spinsCount++;
-
     if (spinsCount === 5) {
       running = false;
       winning();
+      app.stage.addChild(winningClickScreen);
       setTimeout(() => {
-        spinsCount = 0;
         deleteWinningScreen();
-      }, 3000);
+      }, 5000);
     }
 
     if (spinsCount < 5) {
@@ -129,11 +153,11 @@ export function setup() {
       }
     }
   }
-
   function reelsComplete() {
     gameToggleElements(btnDisable, btnActive);
     running = false;
   }
+
   app.ticker.add((delta) => {
     // Update the slots.
     for (let i = 0; i < reels.length; i++) {
@@ -188,13 +212,21 @@ export function setup() {
     const now = Date.now();
     const remove = [];
     for (let i = 0; i < tweening.length; i++) {
-      const t = tweening[i];
-      const phase = Math.min(1, (now - t.start) / t.time);
+      let t = tweening[i];
+      let phase;
+      if (running) {
+        phase = Math.min(1, (now - t.start) / t.time);
+      }
+      if (!running) {
+        phase = 1;
+      }
       t.object[t.property] = lerp(
         t.propertyBeginValue,
         t.target,
         t.easing(phase)
       );
+      // console.log(phase);
+
       if (t.change) t.change(t);
       if (phase === 1) {
         t.object[t.property] = t.target;
@@ -202,17 +234,18 @@ export function setup() {
         remove.push(t);
       }
     }
+
     for (let i = 0; i < remove.length; i++) {
       tweening.splice(tweening.indexOf(remove[i]), 1);
     }
   });
+
   function lerp(a1, a2, t) {
     return a1 * (1 - t) + a2 * t;
   }
   function backout(amount) {
     return (t) => --t * t * ((amount + 1) * t + amount) + 1;
   }
-  let spinsCount = 0;
 }
 
 function gameToggleElements(itemToRemove, itemToAdd) {

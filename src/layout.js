@@ -1,5 +1,5 @@
 import "./styles/style.css";
-import { loadProgressHandler } from "./loading";
+import { loadProgressHandler, deleteLoadProgressHandler } from "./loading";
 import { loadGameContainer } from "./gameFlow";
 
 const slotGame = () => {
@@ -8,7 +8,7 @@ const slotGame = () => {
     .on("progress", loadProgressHandler)
     .load(
       setTimeout(() => {
-        loadGameContainer();
+        deleteLoadProgressHandler(), loadGameContainer();
       }, 1000)
     );
 };

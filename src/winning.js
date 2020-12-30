@@ -1,10 +1,11 @@
 import app from "./app";
+import {winningClickScreen} from "./gameFlow";
+
 let winningContainer = new PIXI.Container();
 
 export function winning() {
   let bgWidth = PIXI.Texture.from("BG.png").width;
   let bgHeight = PIXI.Texture.from("BG.png").height;
-
   let winningBg = new PIXI.Graphics();
   winningBg.beginFill(0x0e4853, 0.7);
   winningBg.drawRect(
@@ -22,10 +23,22 @@ export function winning() {
   winningText.anchor.set(0.6, 0.5);
   winningText.x = app.screen.width / 2;
   winningText.y = app.screen.height / 2;
+
+
+
+
   winningContainer.addChild(winningBg, winningText);
   app.stage.addChild(winningContainer);
 }
 
+// window.app = app;
+// app.renderer.plugins.interaction.on('pointerdown', deleteWinningScreen);
+
+
+
+
+
 export function deleteWinningScreen() {
+  app.stage.removeChild (winningClickScreen)
   winningContainer.removeChildren();
 }
