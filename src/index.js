@@ -9,7 +9,7 @@ const slotGame = () => {
     .on("progress", loadProgressHandler)
     .load(
       setTimeout(() => {
-          loadUICanvas(), deleteLoadProgressHandler(), loadGameContainer();
+        loadUICanvas(), deleteLoadProgressHandler(), loadGameContainer();
       }, 1000)
     );
 };

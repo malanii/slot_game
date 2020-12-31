@@ -88,9 +88,8 @@ export function launchGame() {
       running = false;
       winning();
       setTimeout(() => {
-        spinsCount = 0;
         deleteWinningScreen();
-      }, 3000);
+      }, 10000);
     }
     if (spinsCount < 5) {
       gameToggleElements(btnActive, btnDisable);
@@ -198,6 +197,9 @@ function lerp(a1, a2, t) {
 }
 function backout(amount) {
   return (t) => --t * t * ((amount + 1) * t + amount) + 1;
+}
+export function cleanSpinCounter() {
+  spinsCount = 0;
 }
 function gameToggleElements(itemToRemove, itemToAdd) {
   game.removeChild(itemToRemove);

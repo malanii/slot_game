@@ -4,23 +4,12 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = {
   entry: {
     main: "./src/index.js",
-    // loading: "./src/loading.js",
-    // game: "./src/flow.js",
-    // winning: "./src/winning.js",
-    // ui: "./src/ui.js",
   },
-  // mode: "development",
-  // output: {
-  //   filename: "[name].[contenthash].js",
-  //   path: path.resolve(__dirname, "dist"),
-  // },
   mode: "production",
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
   },
-
-
   plugins: [
     new HTMLWebpackPlugin({
       template: "./index.html",

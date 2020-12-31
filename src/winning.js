@@ -1,5 +1,5 @@
 import app from "./app";
-
+import { cleanSpinCounter } from "./flow";
 let winningContainer = new PIXI.Container();
 
 export function winning() {
@@ -31,6 +31,7 @@ winningClickScreen.drawRect(0, 0, app.screen.width, app.screen.height);
 winningClickScreen.endFill();
 winningClickScreen.interactive = true;
 winningClickScreen.on("click", () => {
+  cleanSpinCounter();
   deleteWinningScreen();
 });
 
