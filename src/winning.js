@@ -21,7 +21,7 @@ export function winning() {
   });
   winningText.anchor.set(0.6, 0.5);
   winningText.position.set(app.screen.width / 2, app.screen.height / 2);
-  winningContainer.addChild(winningBg, winningText,winningClickScreen);
+  winningContainer.addChild(winningBg, winningText, winningClickScreen);
   app.stage.addChild(winningContainer);
 }
 
@@ -31,7 +31,7 @@ winningClickScreen.drawRect(0, 0, app.screen.width, app.screen.height);
 winningClickScreen.endFill();
 winningClickScreen.interactive = true;
 winningClickScreen.on("click", () => {
-    deleteWinningScreen();
+  deleteWinningScreen();
 });
 
 export function deleteWinningScreen() {

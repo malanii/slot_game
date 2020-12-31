@@ -4,17 +4,23 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 module.exports = {
   entry: {
     main: "./src/index.js",
-    loading: "./src/loading.js",
-    game: "./src/flow.js",
-    winning: "./src/winning.js",
-    ui: "./src/ui.js",
-    // reel:"./src/reel.js"
+    // loading: "./src/loading.js",
+    // game: "./src/flow.js",
+    // winning: "./src/winning.js",
+    // ui: "./src/ui.js",
   },
-  mode: "development",
+  // mode: "development",
+  // output: {
+  //   filename: "[name].[contenthash].js",
+  //   path: path.resolve(__dirname, "dist"),
+  // },
+  mode: "production",
   output: {
-    filename: "[name].[contenthash].js",
+    filename: "bundle.js",
     path: path.resolve(__dirname, "dist"),
   },
+
+
   plugins: [
     new HTMLWebpackPlugin({
       template: "./index.html",
@@ -25,7 +31,7 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader','css-loader'],
+        use: ["style-loader", "css-loader"],
       },
     ],
   },
