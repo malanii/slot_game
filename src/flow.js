@@ -89,7 +89,7 @@ export function launchGame() {
       winning();
       setTimeout(() => {
         deleteWinningScreen();
-      }, 10000);
+      }, 3000);
     }
     if (spinsCount < 5) {
       gameToggleElements(btnActive, btnDisable);
